@@ -128,7 +128,7 @@ export const products: Product[] = [
     name: 'Beyerdynamic DT 900 Pro X',
     price: 299.00,
     description:
-      'Open-back studio referentie koptelefoon. Ontworpen voor mixing en mastering met STELLAR.45 driver voor ongeëvenaard detail.',
+      'Open-back studio referentie koptelefoon. Ontworpen voor mixing en mastering met STELLAR.45 driver voor ongeÃ«venaard detail.',
     image: 'https://images.unsplash.com/photo-1487215078519-e21cc028cb29?w=800&q=80',
     category: 'Koptelefoons',
     brand: 'Beyerdynamic',
@@ -138,15 +138,29 @@ export const products: Product[] = [
     tags: ['open-back', 'wired', 'over-ear', 'studio', 'professioneel'],
     isNew: true,
   },
+  {
+    id: '9',
+    name: 'Test Koptelefoon',
+    price: 59.99,
+    description: 'Deze koptelefoon is perfect voor testdoeleinden.',
+    image: 'https://images.unsplash.com/photo-1593642532400-2682810df593?w=800&q=80',
+    category: 'Koptelefoons',
+    brand: 'TestBrand',
+    rating: 4.0,
+    reviews: 10,
+    inStock: true,
+    tags: ['test'],
+    isNew: true,
+  },
 ];
 
 export const collections = [
   {
     id: 'koptelefoons',
     name: 'Koptelefoons',
-    description: 'De beste koptelefoons voor elke situatie — van noise-cancelling tot audiofiele studio-sets.',
+    description: 'De beste koptelefoons voor elke situatie â van noise-cancelling tot audiofiele studio-sets.',
     image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80',
-    productIds: ['1', '2', '3', '4', '5', '6', '7', '8'],
+    productIds: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
   },
 ];
 
