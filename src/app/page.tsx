@@ -35,7 +35,7 @@ export default function Home() {
               href="/products"
               className="inline-block bg-white text-gray-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
             >
-              Bart en Chantal
+              Browse Products
             </Link>
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function Home() {
               </p>
               <div className="flex items-center gap-6 mb-8">
                 <span className="text-4xl font-bold text-gray-900">
-                  â¬{featured.price.toFixed(2)}
+                  Ã¢Â¬{featured.price.toFixed(2)}
                 </span>
               </div>
               <Link
