@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/Header';
+import { CartProvider } from '@/context/CartContext';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -21,22 +22,24 @@ export default function RootLayout({
   return (
     <html lang="nl" className={inter.variable}>
       <body>
-        <Header />
-        <main>{children}</main>
-        <footer className="border-t border-gray-100 mt-20">
-          <div className="container-main py-10 text-center text-sm text-gray-400">
-            © {new Date().getFullYear()} My Store. Powered by{' '}
-            <a
-              href="https://rivodesk.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-gray-600"
-            >
-              Rivodesk
-            </a>
-            .
-          </div>
-        </footer>
+        <CartProvider>
+          <Header />
+          <main>{children}</main>
+          <footer className="border-t border-gray-100 mt-20">
+            <div className="container-main py-10 text-center text-sm text-gray-400">
+              © {new Date().getFullYear()} My Store. Powered by{' '}
+              <a
+                href="https://rivodesk.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-gray-600"
+              >
+                Rivodesk
+              </a>
+              .
+            </div>
+          </footer>
+        </CartProvider>
       </body>
     </html>
   );
