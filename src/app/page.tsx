@@ -7,12 +7,27 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-gradient-to-r from-gray-900 to-gray-800 text-white py-32 overflow-hidden">
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-30"
+          style={{
+            backgroundImage:
+              'url("https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&h=600&fit=crop")',
+          }}
+        />
+
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/50" />
+
+        {/* Content */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <h1 className="text-5xl font-bold mb-6">Welcome to Store</h1>
-            <p className="text-xl text-gray-300 mb-8">
-              Discover premium products crafted for quality and performance.
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+              Experience Premium Sound
+            </h1>
+            <p className="text-xl text-gray-200 mb-8">
+              Discover our curated collection of high-quality audio equipment. From professional headphones to immersive speakers, elevate your listening experience.
             </p>
             <Link
               href="/products"
