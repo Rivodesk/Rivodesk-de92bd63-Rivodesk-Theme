@@ -1,39 +1,98 @@
-import { getProducts } from '@/lib/queries';
-import { ProductCard } from '@/components/ProductCard';
+import Link from "next/link";
+import { getFeaturedProduct } from "@/lib/products";
 
-export const revalidate = 60;
-
-export default async function HomePage() {
-  const products = await getProducts(24);
+export default function Home() {
+  const featured = getFeaturedProduct();
 
   return (
-    <div className="container-main py-10">
-      {/* Hero */}
-      <section className="mb-14 text-center">
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-4">
-          Welkom in onze winkel
-        </h1>
-        <p className="text-lg text-gray-500 max-w-xl mx-auto">
-          Ontdek onze collectie. Gratis verzending vanaf €50.
-        </p>
+    <>
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl">
+            <h1 className="text-5xl font-bold mb-6">Welcome to Store</h1>
+            <p className="text-xl text-gray-300 mb-8">
+              Discover premium products crafted for quality and performance.
+            </p>
+            <Link
+              href="/product"
+              className="inline-block bg-white text-gray-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
+            >
+              Browse Products
+            </Link>
+          </div>
+        </div>
       </section>
 
-      {/* Product grid */}
-      {products.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">
-          <p className="text-lg">Geen producten gevonden.</p>
-          <p className="text-sm mt-2">Voeg producten toe in je Shopify admin.</p>
-        </div>
-      ) : (
-        <section>
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">Alle producten</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+      {/* Featured Product */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-12">
+            Featured Product
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            {/* Image */}
+            <div className="bg-gray-100 rounded-lg overflow-hidden">
+              <img
+                src={featured.image}
+                alt={featured.name}
+                className="w-full h-96 object-cover"
+              />
+            </div>
+
+            {/* Content */}
+            <div>
+              <p className="text-gray-600 text-sm font-semibold mb-2">
+                {featured.category}
+              </p>
+              <h3 className="text-4xl font-bold text-gray-900 mb-4">
+                {featured.name}
+              </h3>
+              <p className="text-gray-600 text-lg mb-6">
+                {featured.description}
+              </p>
+              <div className="flex items-center gap-6 mb-8">
+                <span className="text-4xl font-bold text-gray-900">
+                  ${featured.price}
+                </span>
+              </div>
+              <Link
+                href="/product"
+                className="inline-block bg-gray-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition"
+              >
+                View Product
+              </Link>
+            </div>
           </div>
-        </section>
-      )}
-    </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">
+            Have Questions?
+          </h2>
+          <p className="text-gray-600 text-lg mb-8">
+            Check our FAQ or contact us for more information.
+          </p>
+          <div className="flex gap-4 justify-center flex-wrap">
+            <Link
+              href="/faq"
+              className="bg-white text-gray-900 px-8 py-3 rounded-lg font-semibold border border-gray-300 hover:bg-gray-50 transition"
+            >
+              Read FAQ
+            </Link>
+            <Link
+              href="/contact"
+              className="bg-gray-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition"
+            >
+              Contact Us
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
