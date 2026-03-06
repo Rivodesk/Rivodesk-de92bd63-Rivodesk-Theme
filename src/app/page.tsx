@@ -15,7 +15,7 @@ export default function Home() {
               Discover premium products crafted for quality and performance.
             </p>
             <Link
-              href="/product"
+              href="/products"
               className="inline-block bg-white text-gray-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
             >
               Browse Products
@@ -54,11 +54,11 @@ export default function Home() {
               </p>
               <div className="flex items-center gap-6 mb-8">
                 <span className="text-4xl font-bold text-gray-900">
-                  ${featured.price}
+                  €{featured.price.toFixed(2)}
                 </span>
               </div>
               <Link
-                href="/product"
+                href={`/product/${featured.id}`}
                 className="inline-block bg-gray-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition"
               >
                 View Product
