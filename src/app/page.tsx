@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getFeaturedProduct } from "@/lib/products";
+import ReviewsCarousel from "@/components/ReviewsCarousel";
+import NewsletterSection from "@/components/NewsletterSection";
 
 export default function Home() {
   const featured = getFeaturedProduct();
@@ -108,6 +110,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Reviews Carousel */}
+      <ReviewsCarousel />
+
+      {/* Newsletter Section */}
+      <NewsletterSection />
     </>
   );
 }
