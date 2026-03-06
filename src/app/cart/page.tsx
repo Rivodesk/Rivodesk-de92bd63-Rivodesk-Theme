@@ -62,7 +62,7 @@ export default function CartPage() {
                     {item.name}
                   </Link>
                   <p className="text-sm font-semibold text-gray-900">
-                    â¬{item.price.toFixed(2).replace('.', ',')}
+                    €{item.price.toFixed(2).replace('.', ',')}
                   </p>
                   <div className="mt-3 flex items-center gap-2">
                     <button
@@ -92,7 +92,7 @@ export default function CartPage() {
                 {/* Price & Remove */}
                 <div className="flex flex-col items-end justify-between">
                   <p className="text-sm font-bold text-gray-900">
-                    â¬{(item.price * item.quantity).toFixed(2).replace('.', ',')}
+                    €{(item.price * item.quantity).toFixed(2).replace('.', ',')}
                   </p>
                   <button
                     onClick={() => removeFromCart(item.id)}
@@ -112,7 +112,7 @@ export default function CartPage() {
               href="/products"
               className="text-blue-600 hover:text-blue-700 font-medium text-sm"
             >
-              â Terug naar producten
+              ← Terug naar producten
             </Link>
           </div>
         </div>
@@ -127,7 +127,7 @@ export default function CartPage() {
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Subtotaal</span>
                 <span className="font-semibold text-gray-900">
-                  â¬{totalPrice.toFixed(2).replace('.', ',')}
+                  €{totalPrice.toFixed(2).replace('.', ',')}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
@@ -144,7 +144,7 @@ export default function CartPage() {
             <div className="flex justify-between mb-6">
               <span className="font-bold text-gray-900">Totaal</span>
               <span className="font-bold text-lg text-gray-900">
-                â¬{totalPrice.toFixed(2).replace('.', ',')}
+                €{totalPrice.toFixed(2).replace('.', ',')}
               </span>
             </div>
 
@@ -163,9 +163,9 @@ export default function CartPage() {
 
             {/* Info */}
             <div className="mt-6 pt-6 border-t border-gray-200 text-xs text-gray-500 space-y-2">
-              <p>â Gratis verzending voor alle bestellingen</p>
-              <p>â 30 dagen retourrecht</p>
-              <p>â Veilig afrekenen</p>
+              <p>📦 Gratis verzending voor alle bestellingen</p>
+              <p>↩️ 30 dagen retourrecht</p>
+              <p>🔒 Veilig afrekenen</p>
             </div>
           </div>
         </div>
