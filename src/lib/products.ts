@@ -55,7 +55,7 @@ export const products: Product[] = [
     description:
       'Ergonomische in-ear koptelefoon met 6 uur afspeelduur. Perfecte passering met aanpassbare oordopjes en touch-bediening.',
     image: 'https://images.unsplash.com/photo-1598331668826-20cecc596b86?w=800&q=80',
-    category: 'Koptelefoons',
+    category: 'Draadloze Oordopjes',
     brand: 'ComfortFit',
     rating: 4.5,
     reviews: 5123,
@@ -70,7 +70,7 @@ export const products: Product[] = [
     description:
       'Vintage-geïnspireerde kabelgebonden koptelefoon met warm, analoog geluid. Geschikte voor vinyl collectors en klassieke muziek enthusiasten.',
     image: 'https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?w=800&q=80',
-    category: 'Koptelefoons',
+    category: 'Bekabelde Koptelefoons',
     brand: 'RetroWave',
     rating: 4.3,
     reviews: 876,
@@ -85,7 +85,7 @@ export const products: Product[] = [
     description:
       'Waterbestendige wireless oordopjes ontworpen voor sporters. IPX6-rating, secure-fit design en 8 uur batterijduur met snelladen.',
     image: 'https://images.unsplash.com/photo-1606741965326-cb990ae01bb2?w=800&q=80',
-    category: 'Koptelefoons',
+    category: 'Draadloze Oordopjes',
     brand: 'SportFlex',
     rating: 4.6,
     reviews: 4201,
@@ -100,7 +100,7 @@ export const products: Product[] = [
     description:
       'Speciale slaapkoptelefoon met ultradunne drivers. Perfect voor slaap, mediatie en ontspanning. Zachte oordopjes en draadloos design.',
     image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80',
-    category: 'Koptelefoons',
+    category: 'Draadloze Oordopjes',
     brand: 'SilentZone',
     rating: 4.4,
     reviews: 1234,
@@ -115,7 +115,7 @@ export const products: Product[] = [
     description:
       'E-sports kwaliteit gaming koptelefoon met 7.1 surround sound en laag latency. RGB verlichting, memory foam ear cups en draadloze connectie.',
     image: 'https://images.unsplash.com/photo-1483389127117-b6a2102724ae?w=800&q=80',
-    category: 'Koptelefoons',
+    category: 'Gaming',
     brand: 'BeastSound',
     rating: 4.8,
     reviews: 6789,
@@ -130,7 +130,7 @@ export const products: Product[] = [
     description:
       'Audiofiele open-back koptelefoon voor klassieke muziekliefhebbers. Handgemaakte componenten, uitvoerige soundstage en ongeëvenaarde klarheid.',
     image: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&q=80',
-    category: 'Koptelefoons',
+    category: 'Premium Koptelefoons',
     brand: 'ClassicalAudio',
     rating: 4.9,
     reviews: 543,
@@ -158,10 +158,45 @@ export const products: Product[] = [
 export const collections = [
   {
     id: 'koptelefoons',
-    name: 'Koptelefoons',
-    description: 'De beste koptelefoons voor elke situatie — van gaming tot studio-gebruik.',
+    name: 'Alle Koptelefoons',
+    description: 'De beste koptelefoons voor elke situatie – van gaming tot studio-gebruik.',
     image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80',
-    productIds: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    productIds: ['1', '2', '4', '9'],
+  },
+  {
+    id: 'draadloze-oordopjes',
+    name: 'Draadloze Oordopjes',
+    description: 'Compacte en draagbare oordopjes met de nieuwste Bluetooth-technologie.',
+    image: 'https://images.unsplash.com/photo-1598331668826-20cecc596b86?w=800&q=80',
+    productIds: ['3', '5', '6'],
+  },
+  {
+    id: 'bekabelde-koptelefoons',
+    name: 'Bekabelde Koptelefoons',
+    description: 'Klassieke kabelgebonden koptelefoons voor zuiver geluid zonder batterij.',
+    image: 'https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?w=800&q=80',
+    productIds: ['4', '8'],
+  },
+  {
+    id: 'gaming',
+    name: 'Gaming Koptelefoons',
+    description: 'Speciaal ontworpen voor gamers met surround sound en lage latency.',
+    image: 'https://images.unsplash.com/photo-1483389127117-b6a2102724ae?w=800&q=80',
+    productIds: ['7'],
+  },
+  {
+    id: 'premium',
+    name: 'Premium Audio',
+    description: 'High-end audiophile koptelefoons voor de meest kritische luisteraars.',
+    image: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&q=80',
+    productIds: ['1', '2', '8'],
+  },
+  {
+    id: 'budget',
+    name: 'Budget-vriendelijk',
+    description: 'Kwalitatief goede koptelefoons tegen een voordelig prijs.',
+    image: 'https://images.unsplash.com/photo-1593642532400-2682810df593?w=800&q=80',
+    productIds: ['4', '9', '6'],
   },
 ];
 
