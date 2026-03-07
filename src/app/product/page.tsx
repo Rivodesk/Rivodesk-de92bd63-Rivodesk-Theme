@@ -12,15 +12,15 @@ export default function ProductPage() {
           Home
         </Link>
         <span>/</span>
-        <span className="text-gray-900">{product.name}</span>
+        <span className="text-gray-900">{product.title}</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Product Image */}
         <div className="bg-gray-100 rounded-lg overflow-hidden">
           <img
-            src={product.image}
-            alt={product.name}
+            src={product.featuredImage?.url || ''}
+            alt={product.featuredImage?.altText || product.title}
             className="w-full h-full object-cover"
           />
         </div>
@@ -28,18 +28,20 @@ export default function ProductPage() {
         {/* Product Details */}
         <div>
           <p className="text-gray-600 text-sm font-semibold mb-2">
-            {product.category}
+            Audio Equipment
           </p>
 
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            {product.name}
+            {product.title}
           </h1>
 
           <div className="flex items-center gap-4 mb-6">
             <span className="text-4xl font-bold text-gray-900">
-              ${product.price}
+              €{product.priceRange.minVariantPrice.amount}
             </span>
-            <span className="text-green-600 font-semibold">In Stock</span>
+            <span className={`font-semibold ${product.variants.edges[0]?.node.availableForSale ? 'text-green-600' : 'text-red-600'}`}>
+              {product.variants.edges[0]?.node.availableForSale ? 'In Stock' : 'Out of Stock'}
+            </span>
           </div>
 
           <p className="text-gray-600 text-lg mb-8 leading-relaxed">
@@ -88,10 +90,10 @@ export default function ProductPage() {
           {/* Additional Info */}
           <div className="border-t border-gray-200 mt-8 pt-8 text-gray-600 text-sm">
             <p className="mb-2">
-              <span className="font-semibold">SKU:</span> WH-1000XM5
+              <span className="font-semibold">SKU:</span> {product.handle.toUpperCase()}
             </p>
             <p>
-              <span className="font-semibold">Category:</span> {product.category}
+              <span className="font-semibold">Product ID:</span> {product.id}
             </p>
           </div>
         </div>
