@@ -1,46 +1,64 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ProductCard } from '@/components/ProductCard';
-import { products } from '@/lib/products';
+import { ShopifyProduct, formatPrice } from '@/lib/shopify';
+import { getProducts } from '@/lib/queries';
 import { ChevronDown } from 'lucide-react';
 
-type SortOption = 'newest' | 'price-low' | 'price-high' | 'rating' | 'popularity';
+type SortOption = 'newest' | 'price-low' | 'price-high';
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<ShopifyProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [sort, setSort] = useState<SortOption>('newest');
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [selectedBrand, setSelectedBrand] = useState<string>('');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
-  const [inStockOnly, setInStockOnly] = useState(false);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
 
-  // Extract unique values for filters
-  const brands = [...new Set(products.map((p) => p.brand))].sort();
-  const categories = [...new Set(products.map((p) => p.category))].sort();
-  const maxPrice = Math.max(...products.map((p) => p.price));
+  // Laad producten
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        setLoading(true);
+        const fetchedProducts = await getProducts(50);
+        setProducts(fetchedProducts);
+        
+        // Bereken max prijs
+        if (fetchedProducts.length > 0) {
+          const maxPrice = Math.max(
+            ...fetchedProducts.map((p) => parseFloat(p.priceRange.maxVariantPrice.amount))
+          );
+          setPriceRange([0, Math.ceil(maxPrice)]);
+        }
+      } catch (err) {
+        console.error('Fout bij laden producten:', err);
+        setError('Kon producten niet laden. Controleer uw Shopify-instellingen.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadProducts();
+  }, []);
 
   // Filter en sorteer producten
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = products.filter((product) => {
-      const matchesCategory = !selectedCategory || product.category === selectedCategory;
-      const matchesBrand = !selectedBrand || product.brand === selectedBrand;
-      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
-      const matchesStock = !inStockOnly || product.inStock;
-
-      return matchesCategory && matchesBrand && matchesPrice && matchesStock;
+      const price = parseFloat(product.priceRange.minVariantPrice.amount);
+      const matchesPrice = price >= priceRange[0] && price <= priceRange[1];
+      return matchesPrice;
     });
 
     // Sorteer
     const sorted = [...filtered].sort((a, b) => {
+      const priceA = parseFloat(a.priceRange.minVariantPrice.amount);
+      const priceB = parseFloat(b.priceRange.minVariantPrice.amount);
+
       switch (sort) {
         case 'price-low':
-          return a.price - b.price;
+          return priceA - priceB;
         case 'price-high':
-          return b.price - a.price;
-        case 'rating':
-          return b.rating - a.rating;
-        case 'popularity':
-          return b.reviews - a.reviews;
+          return priceB - priceA;
         case 'newest':
         default:
           return 0;
@@ -48,25 +66,46 @@ export default function ProductsPage() {
     });
 
     return sorted;
-  }, [sort, selectedCategory, selectedBrand, priceRange, inStockOnly]);
+  }, [sort, priceRange, products]);
 
   const resetFilters = () => {
-    setSelectedCategory('');
-    setSelectedBrand('');
-    setPriceRange([0, 500]);
-    setInStockOnly(false);
+    if (products.length > 0) {
+      const maxPrice = Math.max(
+        ...products.map((p) => parseFloat(p.priceRange.maxVariantPrice.amount))
+      );
+      setPriceRange([0, Math.ceil(maxPrice)]);
+    }
     setSort('newest');
   };
 
-  const hasActiveFilters =
-    selectedCategory || selectedBrand || inStockOnly || priceRange[0] > 0 || priceRange[1] < maxPrice;
+  const hasActiveFilters = sort !== 'newest' || priceRange[0] > 0;
+
+  if (error) {
+    return (
+      <div className="container-main py-12">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <h2 className="text-lg font-semibold text-red-900 mb-2">Fout bij laden</h2>
+          <p className="text-red-700">{error}</p>
+          <div className="mt-6 space-y-2 text-sm text-red-600">
+            <p>• Zorg dat NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN is ingesteld</p>
+            <p>• Zorg dat NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN is ingesteld</p>
+            <p>• Controleer of uw Shopify store producten bevat</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-main py-12">
       {/* Header */}
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Alle producten</h1>
-        <p className="text-gray-500">Bekijk ons volledige assortiment ({filteredAndSortedProducts.length} producten)</p>
+        <p className="text-gray-500">
+          {loading
+            ? 'Producten laden...'
+            : `Bekijk ons volledige assortiment (${filteredAndSortedProducts.length} producten)`}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -85,68 +124,6 @@ export default function ProductsPage() {
               )}
             </div>
 
-            {/* Kategorie */}
-            <div className="mb-6">
-              <h4 className="font-semibold text-sm text-gray-900 mb-3">Categorie</h4>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 cursor-pointer group">
-                  <input
-                    type="radio"
-                    name="category"
-                    value=""
-                    checked={!selectedCategory}
-                    onChange={() => setSelectedCategory('')}
-                    className="w-4 h-4 rounded border-gray-300 text-blue-600"
-                  />
-                  <span className="text-sm text-gray-600 group-hover:text-gray-900">Alle categorieën</span>
-                </label>
-                {categories.map((cat) => (
-                  <label key={cat} className="flex items-center gap-2 cursor-pointer group">
-                    <input
-                      type="radio"
-                      name="category"
-                      value={cat}
-                      checked={selectedCategory === cat}
-                      onChange={() => setSelectedCategory(cat)}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600"
-                    />
-                    <span className="text-sm text-gray-600 group-hover:text-gray-900">{cat}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Merk */}
-            <div className="mb-6">
-              <h4 className="font-semibold text-sm text-gray-900 mb-3">Merk</h4>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 cursor-pointer group">
-                  <input
-                    type="radio"
-                    name="brand"
-                    value=""
-                    checked={!selectedBrand}
-                    onChange={() => setSelectedBrand('')}
-                    className="w-4 h-4 rounded border-gray-300 text-blue-600"
-                  />
-                  <span className="text-sm text-gray-600 group-hover:text-gray-900">Alle merken</span>
-                </label>
-                {brands.map((brand) => (
-                  <label key={brand} className="flex items-center gap-2 cursor-pointer group">
-                    <input
-                      type="radio"
-                      name="brand"
-                      value={brand}
-                      checked={selectedBrand === brand}
-                      onChange={() => setSelectedBrand(brand)}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600"
-                    />
-                    <span className="text-sm text-gray-600 group-hover:text-gray-900">{brand}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
             {/* Prijs */}
             <div className="mb-6">
               <h4 className="font-semibold text-sm text-gray-900 mb-3">Prijs</h4>
@@ -154,7 +131,7 @@ export default function ProductsPage() {
                 <input
                   type="range"
                   min="0"
-                  max={maxPrice}
+                  max={priceRange[1]}
                   value={priceRange[0]}
                   onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
@@ -162,7 +139,7 @@ export default function ProductsPage() {
                 <input
                   type="range"
                   min="0"
-                  max={maxPrice}
+                  max={priceRange[1]}
                   value={priceRange[1]}
                   onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
@@ -184,19 +161,6 @@ export default function ProductsPage() {
                 </div>
               </div>
             </div>
-
-            {/* Voorraad */}
-            <div className="mb-6">
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={inStockOnly}
-                  onChange={(e) => setInStockOnly(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-blue-600"
-                />
-                <span className="text-sm text-gray-600 group-hover:text-gray-900">Alleen op voorraad</span>
-              </label>
-            </div>
           </div>
         </div>
 
@@ -205,7 +169,7 @@ export default function ProductsPage() {
           {/* Top bar - Sortering */}
           <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-200">
             <div className="text-sm text-gray-500">
-              {filteredAndSortedProducts.length} producten
+              {loading ? 'Laden...' : `${filteredAndSortedProducts.length} producten`}
             </div>
 
             <div className="relative inline-block">
@@ -217,15 +181,23 @@ export default function ProductsPage() {
                 <option value="newest">Nieuwste eerst</option>
                 <option value="price-low">Laagste prijs</option>
                 <option value="price-high">Hoogste prijs</option>
-                <option value="rating">Beste beoordeling</option>
-                <option value="popularity">Populairste</option>
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
             </div>
           </div>
 
           {/* Product Grid */}
-          {filteredAndSortedProducts.length > 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(9)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-square bg-gray-200 rounded-xl mb-3"></div>
+                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                </div>
+              ))}
+            </div>
+          ) : filteredAndSortedProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredAndSortedProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
