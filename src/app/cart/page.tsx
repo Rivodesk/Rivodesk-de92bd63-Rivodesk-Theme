@@ -1,13 +1,36 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingCart, Loader2 } from 'lucide-react';
+import { redirectToCheckout } from '@/lib/shopify-checkout';
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, clearCart, totalPrice, totalItems } = useCart();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  const handleCheckout = async () => {
+    if (cart.length === 0) return;
+
+    setIsCheckingOut(true);
+
+    try {
+      // Map cart items naar Shopify checkout format
+      // TODO: Dit werkt zodra we echte variant IDs hebben van Shopify
+      const lineItems = cart.map((item) => ({
+        variantId: item.id, // Dit is momenteel product ID, zou variant ID moeten zijn
+        quantity: item.quantity,
+      }));
+
+      // Redirect naar Shopify checkout
+      redirectToCheckout(lineItems);
+    } catch (error) {
+      console.error('Checkout error:', error);
+      setIsCheckingOut(false);
+    }
+  };
 
   if (cart.length === 0) {
     return (
@@ -149,8 +172,19 @@ export default function CartPage() {
             </div>
 
             {/* Checkout Button */}
-            <button className="w-full bg-gray-900 text-white font-semibold py-3 rounded-lg hover:bg-gray-800 transition-colors mb-3">
-              Afrekenen
+            <button
+              onClick={handleCheckout}
+              disabled={isCheckingOut}
+              className="w-full bg-gray-900 text-white font-semibold py-3 rounded-lg hover:bg-gray-800 transition-colors mb-3 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isCheckingOut ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Bezig met laden...
+                </>
+              ) : (
+                'Afrekenen'
+              )}
             </button>
 
             {/* Clear Cart */}
@@ -163,7 +197,7 @@ export default function CartPage() {
 
             {/* Info */}
             <div className="mt-6 pt-6 border-t border-gray-200 text-xs text-gray-500 space-y-2">
-              <p>📦 Gratis verzending voor alle bestellingen</p>
+              <p>🚚 Gratis verzending voor alle bestellingen</p>
               <p>↩️ 30 dagen retourrecht</p>
               <p>🔒 Veilig afrekenen</p>
             </div>
