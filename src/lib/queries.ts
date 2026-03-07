@@ -1,7 +1,7 @@
 import { shopifyClient, ShopifyProduct, ShopifyCollection } from './shopify';
 import { gql } from 'graphql-request';
 
-// ── Fragments ──────────────────────────────────────────────────────────────────
+// ââ Fragments ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 const PRODUCT_FRAGMENT = gql`
   fragment ProductFields on Product {
@@ -41,12 +41,16 @@ const PRODUCT_FRAGMENT = gql`
   }
 `;
 
-// ── Products ───────────────────────────────────────────────────────────────────
+// ââ Products âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 const GET_PRODUCTS = gql`
   ${PRODUCT_FRAGMENT}
-  query GetProducts($first: Int!) {
-    products(first: $first) {
+  query GetProducts($first: Int!, $after: String) {
+    products(first: $first, after: $after) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       edges {
         node {
           ...ProductFields
@@ -65,7 +69,7 @@ const GET_PRODUCT_BY_HANDLE = gql`
   }
 `;
 
-// ── Collections ────────────────────────────────────────────────────────────────
+// ââ Collections ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 const GET_COLLECTIONS = gql`
   query GetCollections($first: Int!) {
@@ -113,13 +117,29 @@ const GET_COLLECTION_BY_HANDLE = gql`
   }
 `;
 
-// ── Query functions ────────────────────────────────────────────────────────────
+// ââ Query functions ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-export async function getProducts(first = 24): Promise<ShopifyProduct[]> {
-  const data = await shopifyClient.request<{
-    products: { edges: Array<{ node: ShopifyProduct }> };
-  }>(GET_PRODUCTS, { first });
-  return data.products.edges.map((e) => e.node);
+export async function getProducts(first = 50): Promise<ShopifyProduct[]> {
+  const allProducts: ShopifyProduct[] = [];
+  let hasNextPage = true;
+  let cursor: string | undefined;
+
+  while (hasNextPage) {
+    const data = await shopifyClient.request<{
+      products: {
+        pageInfo: { hasNextPage: boolean; endCursor: string | null };
+        edges: Array<{ node: ShopifyProduct }>;
+      };
+    }>(GET_PRODUCTS, { first, after: cursor });
+
+    const { products } = data;
+    allProducts.push(...products.edges.map((e) => e.node));
+
+    hasNextPage = products.pageInfo.hasNextPage;
+    cursor = products.pageInfo.endCursor ?? undefined;
+  }
+
+  return allProducts;
 }
 
 export async function getProductByHandle(handle: string): Promise<ShopifyProduct | null> {
