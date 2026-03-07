@@ -1,3 +1,5 @@
+import { ShopifyProduct } from './shopify';
+
 export interface Product {
   id: string;
   name: string;
@@ -200,10 +202,55 @@ export const collections = [
   },
 ];
 
-export const getProductsByCollection = (collectionId: string): Product[] => {
-  const collection = collections.find((c) => c.id === collectionId);
-  if (!collection) return [];
-  return products.filter((p) => collection.productIds.includes(p.id));
+// Convert mock product to ShopifyProduct format
+export const productToShopifyProduct = (product: Product): ShopifyProduct => {
+  const priceString = product.price.toString();
+  
+  return {
+    id: product.id,
+    title: product.name,
+    handle: product.name.toLowerCase().replace(/\s+/g, '-'),
+    description: product.description,
+    featuredImage: {
+      url: product.image,
+      altText: product.name,
+      width: 800,
+      height: 800,
+    },
+    priceRange: {
+      minVariantPrice: {
+        amount: priceString,
+        currencyCode: 'EUR',
+      },
+      maxVariantPrice: {
+        amount: priceString,
+        currencyCode: 'EUR',
+      },
+    },
+    variants: {
+      edges: [
+        {
+          node: {
+            id: `variant-${product.id}`,
+            title: 'Default Variant',
+            price: {
+              amount: priceString,
+              currencyCode: 'EUR',
+            },
+            availableForSale: product.inStock,
+          },
+        },
+      ],
+    },
+  };
 };
 
-export const getFeaturedProduct = () => products[0];
+export const getProductsByCollection = (collectionId: string): ShopifyProduct[] => {
+  const collection = collections.find((c) => c.id === collectionId);
+  if (!collection) return [];
+  return products
+    .filter((p) => collection.productIds.includes(p.id))
+    .map(productToShopifyProduct);
+};
+
+export const getFeaturedProduct = () => productToShopifyProduct(products[0]);
