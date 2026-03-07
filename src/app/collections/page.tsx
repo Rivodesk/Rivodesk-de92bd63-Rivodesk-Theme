@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { collections } from '@/lib/products';
+import { getCollections } from '@/lib/queries';
 import { ArrowRight } from 'lucide-react';
 
 export const metadata = {
@@ -8,7 +8,9 @@ export const metadata = {
   description: 'Ontdek onze zorgvuldig samengestelde collecties.',
 };
 
-export default function CollectionsPage() {
+export default async function CollectionsPage() {
+  const collections = await getCollections(12);
+
   return (
     <div className="container-main py-12">
       {/* Header */}
@@ -25,23 +27,29 @@ export default function CollectionsPage() {
           {collections.map((collection) => (
             <Link
               key={collection.id}
-              href={`/collections/${collection.id}`}
+              href={`/collections/${collection.handle}`}
               className="group relative rounded-2xl overflow-hidden bg-gray-100 aspect-[4/3] block shadow-sm hover:shadow-lg transition-all duration-300"
             >
-              <Image
-                src={collection.image}
-                alt={collection.name}
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-500"
-              />
+              {collection.image ? (
+                <Image
+                  src={collection.image.url}
+                  alt={collection.image.altText || collection.title}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300" />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6">
                 <div>
-                  <h2 className="text-white text-2xl font-bold mb-2">{collection.name}</h2>
+                  <h2 className="text-white text-2xl font-bold mb-2">{collection.title}</h2>
                   <p className="text-white/80 text-sm mb-4 line-clamp-2">{collection.description}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-white bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                      {collection.productIds.length} product{collection.productIds.length !== 1 ? 'en' : ''}
+                      {collection.products?.edges?.length || 0} product
+                      {collection.products?.edges?.length !== 1 ? 'en' : ''}
                     </span>
                     <span className="flex items-center gap-1 text-white text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                       Bekijken <ArrowRight className="h-3 w-3" />
