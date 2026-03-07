@@ -1,10 +1,21 @@
 import Link from "next/link";
-import { getFeaturedProduct } from "@/lib/products";
+import { getProducts } from "@/lib/queries";
 import ReviewsCarousel from "@/components/ReviewsCarousel";
 import NewsletterSection from "@/components/NewsletterSection";
+import { formatPrice } from "@/lib/shopify";
 
-export default function Home() {
-  const featured = getFeaturedProduct();
+async function getFeaturedProduct() {
+  try {
+    const products = await getProducts(1);
+    return products[0] || null;
+  } catch (error) {
+    console.error('Fout bij laden featured product:', error);
+    return null;
+  }
+}
+
+export default async function Home() {
+  const featured = await getFeaturedProduct();
 
   return (
     <>
@@ -42,48 +53,47 @@ export default function Home() {
       </section>
 
       {/* Featured Product */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-12">
-            Featured Product
-          </h2>
+      {featured && (
+        <section className="py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-12">
+              Featured Product
+            </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            {/* Image */}
-            <div className="bg-gray-100 rounded-lg overflow-hidden">
-              <img
-                src={featured.image}
-                alt={featured.name}
-                className="w-full h-96 object-cover"
-              />
-            </div>
-
-            {/* Content */}
-            <div>
-              <p className="text-gray-600 text-sm font-semibold mb-2">
-                {featured.category}
-              </p>
-              <h3 className="text-4xl font-bold text-gray-900 mb-4">
-                {featured.name}
-              </h3>
-              <p className="text-gray-600 text-lg mb-6">
-                {featured.description}
-              </p>
-              <div className="flex items-center gap-6 mb-8">
-                <span className="text-4xl font-bold text-gray-900">
-                  ÃÂ¢ÃÂ¬{featured.price.toFixed(2)}
-                </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              {/* Image */}
+              <div className="bg-gray-100 rounded-lg overflow-hidden">
+                <img
+                  src={featured.featuredImage?.url || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80'}
+                  alt={featured.featuredImage?.altText || featured.title}
+                  className="w-full h-96 object-cover"
+                />
               </div>
-              <Link
-                href={`/product/${featured.id}`}
-                className="inline-block bg-gray-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition"
-              >
-                View Product
-              </Link>
+
+              {/* Content */}
+              <div>
+                <h3 className="text-4xl font-bold text-gray-900 mb-4">
+                  {featured.title}
+                </h3>
+                <p className="text-gray-600 text-lg mb-6">
+                  {featured.description}
+                </p>
+                <div className="flex items-center gap-6 mb-8">
+                  <span className="text-4xl font-bold text-gray-900">
+                    {formatPrice(featured.priceRange.minVariantPrice.amount, featured.priceRange.minVariantPrice.currencyCode, 'nl-NL')}
+                  </span>
+                </div>
+                <Link
+                  href={`/product/${featured.handle}`}
+                  className="inline-block bg-gray-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition"
+                >
+                  View Product
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="bg-gray-50 py-16">
